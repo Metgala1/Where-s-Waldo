@@ -1,12 +1,10 @@
-// components/TargetBox.jsx
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-const TargetBox = ({ x, y, characters, onSelect, onClose }) => {
-  const boxRef = useRef(null);
-
+function TargetBox({ x, y, characters = [], onSelect, onClose }) {
+  // --- Close on outside click ---
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (boxRef.current && !boxRef.current.contains(e.target)) {
+      if (!e.target.closest(".target-box")) {
         onClose();
       }
     };
@@ -16,29 +14,54 @@ const TargetBox = ({ x, y, characters, onSelect, onClose }) => {
 
   return (
     <div
-      ref={boxRef}
+      className="target-box"
       style={{
         position: "absolute",
         left: x,
         top: y,
-        border: "2px solid red",
-        padding: "5px",
+        transform: "translate(-50%, -50%)",
         background: "white",
+        border: "2px solid red",
+        padding: "8px",
         zIndex: 10,
       }}
     >
-      <select onChange={(e) => onSelect(e.target.value)} defaultValue="">
+      <select
+        defaultValue=""
+        onChange={(e) => {
+          if (e.target.value) {
+            onSelect(e.target.value);
+          }
+        }}
+      >
         <option value="" disabled>
           Select character
         </option>
-        {characters.map((char) => (
-          <option key={char.id} value={char.id}>
-            {char.name}
-          </option>
-        ))}
+        {characters.length > 0 ? (
+          characters.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))
+        ) : (
+          <option disabled>No characters</option>
+        )}
       </select>
+
+      <button
+        onClick={onClose}
+        style={{
+          marginLeft: "5px",
+          background: "transparent",
+          border: "none",
+          fontSize: "16px",
+          cursor: "pointer",
+        }}
+      >
+        ✖
+      </button>
     </div>
   );
-};
+}
 
 export default TargetBox;
